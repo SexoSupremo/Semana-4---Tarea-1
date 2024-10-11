@@ -48,7 +48,6 @@ async function showMovieDetails(movieId) {
             <h3>${movie.title}</h3>
             <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
             <p>Fecha de lanzamiento: ${movie.release_date}</p>
-            <p>Calificación: ${movie.vote_average}/10</p>
             <p>Sinopsis: ${movie.overview}</p>
         `;
         movieDetails.classList.remove('hidden');
