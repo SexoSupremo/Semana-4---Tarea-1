@@ -1,77 +1,87 @@
-const apiUrl = 'https://jsonplaceholder.typicode.com/todos';; // URL de la API para tareas
-const taskList = document.getElementById('task-list'); // Obtiene el elemento de la lista de tareas
-const taskForm = document.getElementById('task-form'); // Obtiene el formulario de tareas
-const taskInput = document.getElementById('task-input'); // Obtiene el campo de entrada de tareas
+const apiKey = 'YOUR API KEY'; // Reemplaza con tu clave API
+const apiUrl = 'https://api.themoviedb.org/3';
+const movieList = document.getElementById('movies');
+const movieDetails = document.getElementById('movie-details');
+const detailsContainer = document.getElementById('details');
+const searchButton = document.getElementById('search-button');
+const searchInput = document.getElementById('search-input');
+const favoritesList = document.getElementById('favorites-list');
+const addToFavoritesButton = document.getElementById('add-to-favorites');
+let selectedMovieId = null;
+let favoriteMovies = JSON.parse(localStorage.getItem('favorites')) || [];
 
-// Función para obtener y mostrar tareas desde la API
-async function fetchTasks() {
+// Fetch and display popular movies
+async function fetchPopularMovies() {
     try {
-        const response = await fetch(apiUrl); // Realiza una solicitud GET a la API
-        const tasks = await response.json(); // Convierte la respuesta a JSON
-        displayTasks(tasks); // Llama a la función para mostrar las tareas
+        // tu codigo aqui: realiza una solicitud para obtener las películas populares
+        // y llama a displayMovies con los resultados
     } catch (error) {
-        console.error('Error fetching tasks:', error); // Maneja y muestra errores de la solicitud
+        console.error('Error fetching popular movies:', error);
     }
 }
 
-// Función para mostrar tareas en la lista
-function displayTasks(tasks) {
-    taskList.innerHTML = ''; // Limpia la lista de tareas actual
-    tasks.forEach(task => { // Itera sobre cada tarea
-        const li = document.createElement('li'); // Crea un nuevo elemento de lista
-        li.textContent = task.title; // Establece el texto del elemento de lista
-        const deleteBtn = document.createElement('button'); // Crea un nuevo botón de eliminar
-        deleteBtn.textContent = 'Eliminar'; // Establece el texto del botón
-        deleteBtn.classList.add('delete-btn'); // Añade la clase para estilos
-        deleteBtn.onclick = () => deleteTask(task.id, li); // Asigna la función de eliminar a un clic
-        li.appendChild(deleteBtn); // Añade el botón al elemento de lista
-        taskList.appendChild(li); // Añade el elemento de lista a la lista de tareas
+// Display movies
+function displayMovies(movies) {
+    movieList.innerHTML = ''; // Limpia la lista de películas
+    movies.forEach(movie => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
+            <span>${movie.title}</span>
+        `;
+        li.onclick = () => showMovieDetails(movie.id); // Muestra detalles al hacer clic en la película
+        movieList.appendChild(li);
     });
 }
 
-// Maneja la sumisión del formulario para agregar una nueva tarea
-taskForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Previene el comportamiento por defecto del formulario
-    const taskTitle = taskInput.value; // Obtiene el valor del campo de entrada
-    if (taskTitle) { // Si el campo de entrada no está vacío
+// Show movie details
+async function showMovieDetails(movieId) {
+    try {
+        // tu codigo aqui: realiza una solicitud para obtener los detalles de la película
+        // y actualiza el contenedor de detalles con la información de la película
+    } catch (error) {
+        console.error('Error fetching movie details:', error);
+    }
+}
+
+// Search movies
+searchButton.addEventListener('click', async () => {
+    const query = searchInput.value;
+    if (query) {
         try {
-            const response = await fetch(apiUrl, { // Realiza una solicitud POST a la API para agregar una tarea
-                method: 'POST', // Método de solicitud POST
-                headers: {
-                    'Content-Type': 'application/json', // Tipo de contenido JSON
-                },
-                body: JSON.stringify({ // Crea el cuerpo de la solicitud en formato JSON
-                    title: taskTitle,
-                    completed: false, // Marca la tarea como no completada
-                }),
-            });
-            const newTask = await response.json(); // Convierte la respuesta a JSON
-            const li = document.createElement('li'); // Crea un nuevo elemento de lista
-            li.textContent = newTask.title; // Establece el texto del elemento de lista
-            const deleteBtn = document.createElement('button'); // Crea un nuevo botón de eliminar
-            deleteBtn.textContent = 'Eliminar'; // Establece el texto del botón
-            deleteBtn.classList.add('delete-btn'); // Añade la clase para estilos
-            deleteBtn.onclick = () => deleteTask(newTask.id, li); // Asigna la función de eliminar a un clic
-            li.appendChild(deleteBtn); // Añade el botón al elemento de lista
-            taskList.appendChild(li); // Añade el elemento de lista a la lista de tareas
-            taskInput.value = ''; // Limpia el campo de entrada
+            // tu codigo aqui: realiza una solicitud para buscar películas
+            // y llama a displayMovies con los resultados de la búsqueda
         } catch (error) {
-            console.error('Error adding task:', error); // Maneja y muestra errores de la solicitud
+            console.error('Error searching movies:', error);
         }
     }
 });
 
-// Función para eliminar una tarea
-async function deleteTask(taskId, listItem) {
-    try {
-        await fetch(`${apiUrl}/${taskId}`, { // Realiza una solicitud DELETE a la API para eliminar una tarea
-            method: 'DELETE', // Método de solicitud DELETE
-        });
-        taskList.removeChild(listItem); // Elimina el elemento de lista del DOM
-    } catch (error) {
-        console.error('Error deleting task:', error); // Maneja y muestra errores de la solicitud
+// Add movie to favorites
+addToFavoritesButton.addEventListener('click', () => {
+    if (selectedMovieId) {
+        const favoriteMovie = {
+            id: selectedMovieId,
+            title: document.querySelector('#details h3').textContent
+        };
+        if (!favoriteMovies.some(movie => movie.id === selectedMovieId)) {
+            favoriteMovies.push(favoriteMovie);
+            localStorage.setItem('favorites', JSON.stringify(favoriteMovies)); // Guarda en localStorage
+            displayFavorites(); // Muestra la lista actualizada de favoritos
+        }
     }
+});
+
+// Display favorite movies
+function displayFavorites() {
+    favoritesList.innerHTML = ''; // Limpia la lista de favoritos
+    favoriteMovies.forEach(movie => {
+        const li = document.createElement('li');
+        li.textContent = movie.title;
+        favoritesList.appendChild(li);
+    });
 }
 
-// Llama a la función para obtener tareas al cargar la página
-fetchTasks();
+// Initial fetch of popular movies and display favorites
+fetchPopularMovies(); // Obtiene y muestra las películas populares
+displayFavorites(); // Muestra las películas favoritas guardadas
